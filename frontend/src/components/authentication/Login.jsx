@@ -5,14 +5,12 @@ import { useNavigate, Link } from "react-router-dom";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // State to store validation or API errors
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    // Reset the error message
     setError("");
 
-    // Front-end validation
     if (!username.trim()) {
       setError("Username is required.");
       return;
@@ -23,11 +21,9 @@ const Login = () => {
     }
 
     try {
-      // Make API call
       const res = await axios.post("http://localhost:5000/api/auth/login", { username, password });
-      navigate("/home"); // Navigate to home on successful login
+      navigate("/dashboard"); 
     } catch (err) {
-      // Handle API errors
       setError("Invalid username or password. Please try again.");
     }
   };

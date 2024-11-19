@@ -3,10 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Employeecreate = () => {
-  const { id } = useParams(); // Get employee ID from URL
-  const navigate = useNavigate(); // Navigation hook
+  const { id } = useParams(); 
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
-  // State for form data
+
   const [formData, setFormData] = useState({
     f_Name: "",
     f_Email: "",
@@ -16,10 +16,9 @@ const Employeecreate = () => {
     f_Course: [],
   });
 
-  const [f_Image, setF_Image] = useState(null); // State for file upload
+  const [f_Image, setF_Image] = useState(null); 
 
   useEffect(() => {
-    // Fetch employee details if `id` exists (for edit functionality)
     if (id) {
       axios
         .get(`http://localhost:5000/api/employees/${id}`)
@@ -42,7 +41,6 @@ const Employeecreate = () => {
     }
   }, [id]);
 
-  // Handle changes in form inputs
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     if (type === "checkbox") {
@@ -94,11 +92,13 @@ const Employeecreate = () => {
   };
 
   // Handle file input change
-  const handleFileChange = (e) => {
-    setF_Image(e.target.files[0]);
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setFImage(file); 
+    }
   };
-
-  // Handle form submission
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -119,8 +119,8 @@ const Employeecreate = () => {
       data.append("f_Designation", formData.f_Designation);
       data.append("f_Gender", formData.f_Gender);
       data.append("f_Course", JSON.stringify(formData.f_Course));
-      if (f_Image) {
-        data.append("f_Image", f_Image);
+      if (f_Image && typeof f_Image !== "string") { 
+        formData.append("f_Image", f_Image);
       }
       console.log('Data being sent:////', formData);
 
@@ -265,13 +265,13 @@ const Employeecreate = () => {
           {errors.f_Image && (
             <p className="text-red-500 text-sm">{errors.f_Image}</p>
           )}
-          {f_Image && !id && (
-            <img
-              src={URL.createObjectURL(f_Image)}
-              alt="Preview"
-              className="mt-2 w-24 h-24 object-cover"
-            />
-          )}
+          {f_Image && typeof f_Image !== "string" && (
+    <img
+      src={URL.createObjectURL(f_Image)}
+      alt="Preview"
+      className="mt-2 w-24 h-24 object-cover"
+    />
+  )}
           {id && f_Image && typeof f_Image === "string" && (
             <img
               src={`http://localhost:5000/${f_Image}`}

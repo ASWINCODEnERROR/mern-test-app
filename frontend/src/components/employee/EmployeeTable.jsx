@@ -44,9 +44,7 @@ const EmployeeTable = () => {
         Employee Table
       </h2>
 
-      {/* Search and Sort Controls */}
       <div className="flex items-center space-x-4 mb-6">
-        {/* Search Input */}
         <input
           type="text"
           placeholder="Search"
@@ -55,7 +53,6 @@ const EmployeeTable = () => {
           className="px-4 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
         />
 
-        {/* Sort Dropdown */}
         <select
           value={sortBy}
           onChange={handleSortChange}
@@ -67,7 +64,6 @@ const EmployeeTable = () => {
           <option value="_id">ID</option>
         </select>
 
-        {/* Toggle Order Button */}
         <button
           onClick={toggleOrder}
           className="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600"
@@ -120,7 +116,6 @@ const EmployeeTable = () => {
           <tbody>
             {employees.map((employee, index) => (
               <tr key={employee._id} className="border-t">
-                {/* <td className="px-4 py-2">{employee._id}</td> */}
                 <td className="px-4 py-2">{index + 1}</td>
                 <td className="px-4 py-2">
                   <img
@@ -130,7 +125,6 @@ const EmployeeTable = () => {
                     onError={(e) => (e.target.src = "/default-image.png")}
                   />
                 </td>
-                {/* <td className="px-4 py-2">{employee.f_Image}</td> */}
                 <td className="px-4 py-2">{employee.f_Name}</td>
                 <td className="px-4 py-2">{employee.f_Email}</td>
                 <td className="px-4 py-2">{employee.f_Mobile}</td>
@@ -178,7 +172,6 @@ const EmployeeTable = () => {
         </table>
       </div>
 
-      {/* Pagination Controls */}
       <div className="flex items-center justify-between mt-6">
         <button
           onClick={prevPage}

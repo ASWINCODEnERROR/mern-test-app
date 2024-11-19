@@ -27,7 +27,7 @@ function App() {
 
         {/* Routes with Navigation */}
         <Route element={<AppLayout />}>
-          <Route path="/home" element={<Home />} />
+          <Route path="/dashboard" element={<Home />} />
           <Route path="/addemp" element={<AddEmployeeForm />} />
           <Route path="/emptab" element={<EmployeeTable />} />
           <Route path="/createmp" element={<Employeecreate />} />

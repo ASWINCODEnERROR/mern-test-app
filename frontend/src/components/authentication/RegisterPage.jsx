@@ -6,7 +6,7 @@ const RegisterPage = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
-    confirmPassword: "", // New field for confirm password
+    confirmPassword: "",
   });
 
   const [message, setMessage] = useState("");
@@ -23,7 +23,6 @@ const RegisterPage = () => {
     setError("");
     setMessage("");
 
-    // Validation for password match
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -38,10 +37,10 @@ const RegisterPage = () => {
       navigate("/home");
       
       console.log("Registering user with data: ", formData);
-      setMessage(response.data.message); // Show success message
-      setFormData({ username: "", password: "", confirmPassword: "" }); // Clear form fields
+      setMessage(response.data.message); 
+      setFormData({ username: "", password: "", confirmPassword: "" }); 
     } catch (err) {
-      console.error(err); // Log the error for debugging
+      console.error(err); 
       setError(err.response?.data?.message || err.message || "Something went wrong");
     }
   };

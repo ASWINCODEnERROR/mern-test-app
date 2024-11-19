@@ -69,13 +69,46 @@ router.post("/", upload.single("f_Image"), async (req, res) => {
 // GET route to fetch all employees
 router.get("/", async (req, res) => {
   try {
-    const employees = await Employee.find(); // Fetch all employees
-    res.status(200).json({ employees });
+    const { search, sortBy, order = "asc", page = 1, limit = 10 } = req.query;
+    const query = {};
+
+    // Apply search filter if provided
+    if (search) {
+      query.$or = [
+        { f_Name: { $regex: search, $options: "i" } }, // Case-insensitive search on f_Name
+        { f_Email: { $regex: search, $options: "i" } }, // Case-insensitive search on f_Email
+      ];
+    }
+
+    // Apply sorting
+    const sortOptions = {};
+    if (sortBy) {
+      sortOptions[sortBy] = order === "desc" ? -1 : 1;
+    }
+
+    // Pagination logic
+    const skip = (page - 1) * limit;
+    const employees = await Employee.find(query) // Fetch employees based on the query filter
+      .sort(sortOptions)                       // Sort based on the sort options
+      .skip(skip)                              // Apply pagination: skip for the current page
+      .limit(parseInt(limit));                 // Limit the number of employees per page
+
+    // Get the total number of employees for pagination
+    const totalCount = await Employee.countDocuments(query);
+
+    // Send the response with employees data and pagination info
+    res.status(200).json({
+      employees,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit), // Calculate total pages based on limit
+      currentPage: parseInt(page),
+    });
   } catch (err) {
     console.error("Error fetching employees:", err);
     res.status(500).json({ message: "Error fetching employees", error: err.message });
   }
 });
+
 
 // GET route to fetch an employee by ID
 router.get("/:id", async (req, res) => {
@@ -165,65 +198,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+
 module.exports = router;
 
-
-// GET route to fetch all employees with filtering, sorting, and pagination
-// router.get("/", async (req, res) => {
-//   try {
-//     const { search, sortBy, order = "asc", page = 1, limit = 10 } = req.query;
-//     const query = {};
-
-//     // Apply search filter
-//     if (search) {
-//       query.$or = [
-//         { f_Name: { $regex: search, $options: "i" } }, // Case-insensitive search on name
-//         { f_Email: { $regex: search, $options: "i" } } // Case-insensitive search on email
-//       ];
-//     }
-
-//     // Sorting
-//     const sortOptions = {};
-//     if (sortBy) {
-//       sortOptions[sortBy] = order === "desc" ? -1 : 1;
-//     }
-
-//     // Pagination
-//     const skip = (page - 1) * limit;
-//     const employees = await Employee.find(query)
-//       .sort(sortOptions)
-//       .skip(skip)
-//       .limit(parseInt(limit));
-
-//     // Total count for pagination
-//     const totalCount = await Employee.countDocuments(query);
-
-//     res.status(200).json({
-//       employees,
-//       totalCount,
-//       totalPages: Math.ceil(totalCount / limit),
-//       currentPage: parseInt(page),
-//     });
-//   } catch (err) {
-//     console.error("Error fetching employees:", err);
-//     res.status(500).json({ message: "Error fetching employees", error: err.message });
-//   }
-// });
-// router.put("/:id/active", async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { isActive } = req.body; // Pass isActive in the request body
-//     const employee = await Employee.findByIdAndUpdate(id, { isActive }, { new: true });
-
-//     if (!employee) {
-//       return res.status(404).json({ message: "Employee not found" });
-//     }
-
-//     res.status(200).json({ message: "Employee status updated successfully", employee });
-//   } catch (err) {
-//     console.error("Error updating status:", err);
-//     res.status(500).json({ message: "Error updating status", error: err.message });
-//   }
-// });
-// module.exports = router;
 
