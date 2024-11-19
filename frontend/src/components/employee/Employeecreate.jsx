@@ -151,7 +151,7 @@ const Employeecreate = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded shadow-md">
+    <div className="max-w-md  mt-10 mx-auto p-6 bg-white rounded shadow-md">
       <h1 className="text-2xl font-bold mb-4">
         {id ? "Edit Employee" : "Add Employee"}
       </h1>

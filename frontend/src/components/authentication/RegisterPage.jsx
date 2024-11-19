@@ -34,7 +34,7 @@ const RegisterPage = () => {
         formData
         
       );
-      navigate("/home");
+      navigate("/dashboard");
       
       console.log("Registering user with data: ", formData);
       setMessage(response.data.message); 
