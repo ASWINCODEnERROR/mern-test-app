@@ -3,9 +3,9 @@ import Login from "./components/authentication/Login";
 import RegisterPage from "./components/authentication/RegisterPage";
 import Navigation from "./layouts/Navigation";
 import EmployeeTable from "./components/employee/EmployeeTable";
-import AddEmployeeForm from "./components/authentication/AddEmployeeForm";
 import Employeecreate from "./components/employee/Employeecreate";
 import { Outlet } from "react-router-dom";
+import Home from "./components/Home/Home";
 
 function AppLayout() {
   return (
@@ -26,7 +26,7 @@ function App() {
 
         {/* Routes with Navigation */}
         <Route element={<AppLayout />}>
-          <Route path="/addemp" element={<AddEmployeeForm />} />
+          <Route path="/dashboard" element={<Home />} />
           <Route path="/emptab" element={<EmployeeTable />} />
           <Route path="/createmp" element={<Employeecreate />} />
           <Route path="/edit/:id" element={<Employeecreate />} />
