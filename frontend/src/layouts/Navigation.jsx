@@ -1,7 +1,8 @@
 import React from 'react'
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import {Link}  from "react-router-dom";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 const navigation = [
   { name: 'HOME', href: '/dashboard', current: true },
@@ -14,7 +15,26 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
+
 const Navigation = () => {
+
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      // Send the logout request (although JWT does not need a server-side logout, we can just clear the token on the client side)
+      await axios.post('http://localhost:5000/api/auth/logout');
+      
+      // Clear the auth token from localStorage (or cookies, depending on where you store it)
+      localStorage.removeItem('authToken'); 
+      
+      // Redirect to the login page
+      navigate('/');
+    } catch (err) {
+      console.error('Logout error', err);
+    }
+  };
+  
     return (
         <Disclosure as="nav" className="bg-gray-700">
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -111,18 +131,19 @@ const Navigation = () => {
                     </Menu.Item>
                     <Menu.Item>
                       {({ active }) => (
-                        <a
-                          href="#"
-                          className={classNames(
-                            active ? 'bg-gray-100' : '',
-                            'block px-4 py-2 text-sm text-gray-700'
-                          )}
+                        <onclick
                         >
                           Sign out
-                        </a>
+                        </onclick>
                       )}
                     </Menu.Item>
                   </Menu.Items>
+                  <button
+            onClick={handleLogout}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition duration-200"
+          >
+            out
+          </button>
                 </Menu>
               </div>
             </div>

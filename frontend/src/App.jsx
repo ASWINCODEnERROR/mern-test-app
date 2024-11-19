@@ -6,6 +6,7 @@ import EmployeeTable from "./components/employee/EmployeeTable";
 import AddEmployeeForm from "./components/authentication/AddEmployeeForm";
 import Employeecreate from "./components/employee/Employeecreate";
 import { Outlet } from "react-router-dom";
+import Home from "./components/Home/Home";
 
 function AppLayout() {
   return (
@@ -26,6 +27,7 @@ function App() {
 
         {/* Routes with Navigation */}
         <Route element={<AppLayout />}>
+          <Route path="/home" element={<Home />} />
           <Route path="/addemp" element={<AddEmployeeForm />} />
           <Route path="/emptab" element={<EmployeeTable />} />
           <Route path="/createmp" element={<Employeecreate />} />
