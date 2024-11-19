@@ -10,7 +10,7 @@ const Employeecreate = () => {
   const [formData, setFormData] = useState({
     f_Name: "",
     f_Email: "",
-    f_Mobile: "",
+    f_Mobile: "", // Ensure this is a string
     f_Designation: "",
     f_Gender: "",
     f_Course: [],
@@ -51,22 +51,33 @@ const Employeecreate = () => {
           : prevState.f_Course.filter((course) => course !== value),
       }));
     } else {
-      setFormData((prevState) => ({ ...prevState, [name]: value }));
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: name === "f_Mobile" ? String(value) : value, // Convert f_Mobile to string
+      }));
     }
   };
+
   const validate = () => {
     const newErrors = {};
-    if (!formData.f_Name.trim()) newErrors.f_Name = "Name is required";
-    if (!formData.f_Email.trim()) newErrors.f_Email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.f_Email))
+
+    const name = formData.f_Name?.trim() || "";
+    const email = formData.f_Email?.trim() || "";
+    const mobile = String(formData.f_Mobile)?.trim() || ""; // Ensure mobile is a string
+    const designation = formData.f_Designation?.trim() || "";
+    const gender = formData.f_Gender?.trim() || "";
+
+    if (!name) newErrors.f_Name = "Name is required";
+    if (!email) newErrors.f_Email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(email))
       newErrors.f_Email = "Email is not valid";
-    if (!formData.f_Mobile.trim()) newErrors.f_Mobile = "Mobile is required";
-    else if (!/^\d{10}$/.test(formData.f_Mobile))
+    if (!mobile) newErrors.f_Mobile = "Mobile is required";
+    else if (!/^\d{10}$/.test(mobile))
       newErrors.f_Mobile = "Mobile must be a 10-digit number";
-    if (!formData.f_Designation.trim())
-      newErrors.f_Designation = "Designation is required";
-    if (!formData.f_Gender.trim()) newErrors.f_Gender = "Gender is required";
-    if (formData.f_Course.length === 0) newErrors.f_Course = "At least one course is required";
+    if (!designation) newErrors.f_Designation = "Designation is required";
+    if (!gender) newErrors.f_Gender = "Gender is required";
+    if (formData.f_Course.length === 0)
+      newErrors.f_Course = "At least one course is required";
 
     if (f_Image && !["image/png", "image/jpeg"].includes(f_Image.type)) {
       newErrors.f_Image = "Only PNG and JPG images are allowed.";
@@ -95,22 +106,23 @@ const Employeecreate = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setFImage(file); 
+      setF_Image(file); 
     }
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validate()){
+    if (!validate()) {
       return;
-    } 
+    }
 
     const isDuplicate = await checkEmailDuplicate();
     if (isDuplicate) {
       setErrors((prev) => ({ ...prev, f_Email: "Email already exists" }));
       return;
     }
+
     try {
       const data = new FormData();
       data.append("f_Name", formData.f_Name);
@@ -120,17 +132,14 @@ const Employeecreate = () => {
       data.append("f_Gender", formData.f_Gender);
       data.append("f_Course", JSON.stringify(formData.f_Course));
       if (f_Image && typeof f_Image !== "string") { 
-        formData.append("f_Image", f_Image);
+        data.append("f_Image", f_Image);
       }
-      console.log('Data being sent:////', formData);
 
       // Update or create employee
       if (id) {
-        // Update
         await axios.put(`http://localhost:5000/api/employees/${id}`, data);
         alert("Employee updated successfully!");
       } else {
-        // Create
         await axios.post("http://localhost:5000/api/employees", data);
         alert("Employee added successfully!");
       }
@@ -259,8 +268,8 @@ const Employeecreate = () => {
           <input
             type="file"
             name="f_Image"
+            accept="image/*"
             onChange={handleFileChange}
-            className="w-full border rounded px-3 py-2"
           />
           {errors.f_Image && (
             <p className="text-red-500 text-sm">{errors.f_Image}</p>
@@ -283,7 +292,7 @@ const Employeecreate = () => {
 
         <button
           type="submit"
-          className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600"
+          className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
         >
           {id ? "Update Employee" : "Add Employee"}
         </button>
