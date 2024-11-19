@@ -5,7 +5,7 @@ import axios from "axios";
 const Employeecreate = () => {
   const { id } = useParams(); // Get employee ID from URL
   const navigate = useNavigate(); // Navigation hook
-
+  const [errors, setErrors] = useState({});
   // State for form data
   const [formData, setFormData] = useState({
     f_Name: "",
@@ -56,6 +56,42 @@ const Employeecreate = () => {
       setFormData((prevState) => ({ ...prevState, [name]: value }));
     }
   };
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.f_Name.trim()) newErrors.f_Name = "Name is required";
+    if (!formData.f_Email.trim()) newErrors.f_Email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.f_Email))
+      newErrors.f_Email = "Email is not valid";
+    if (!formData.f_Mobile.trim()) newErrors.f_Mobile = "Mobile is required";
+    else if (!/^\d{10}$/.test(formData.f_Mobile))
+      newErrors.f_Mobile = "Mobile must be a 10-digit number";
+    if (!formData.f_Designation.trim())
+      newErrors.f_Designation = "Designation is required";
+    if (!formData.f_Gender.trim()) newErrors.f_Gender = "Gender is required";
+    if (formData.f_Course.length === 0) newErrors.f_Course = "At least one course is required";
+
+    if (f_Image && !["image/png", "image/jpeg"].includes(f_Image.type)) {
+      newErrors.f_Image = "Only PNG and JPG images are allowed.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const checkEmailDuplicate = async () => {
+    if (!id) {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/employees?email=${formData.f_Email}`
+        );
+        return response.data.exists;
+      } catch (error) {
+        console.error("Error checking email duplication:", error);
+        return false;
+      }
+    }
+    return false;
+  };
 
   // Handle file input change
   const handleFileChange = (e) => {
@@ -66,6 +102,15 @@ const Employeecreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!validate()){
+      return;
+    } 
+
+    const isDuplicate = await checkEmailDuplicate();
+    if (isDuplicate) {
+      setErrors((prev) => ({ ...prev, f_Email: "Email already exists" }));
+      return;
+    }
     try {
       const data = new FormData();
       data.append("f_Name", formData.f_Name);
@@ -112,6 +157,9 @@ const Employeecreate = () => {
             className="w-full border rounded px-3 py-2"
             required
           />
+          {errors.f_Name && (
+            <p className="text-red-500 text-sm">{errors.f_Name}</p>
+          )}
         </div>
 
         <div>
@@ -124,6 +172,9 @@ const Employeecreate = () => {
             className="w-full border rounded px-3 py-2"
             required
           />
+          {errors.f_Email && (
+            <p className="text-red-500 text-sm">{errors.f_Email}</p>
+          )}
         </div>
 
         <div>
@@ -136,6 +187,9 @@ const Employeecreate = () => {
             className="w-full border rounded px-3 py-2"
             required
           />
+          {errors.f_Mobile && (
+            <p className="text-red-500 text-sm">{errors.f_Mobile}</p>
+          )}
         </div>
 
         <div>
@@ -152,6 +206,9 @@ const Employeecreate = () => {
             <option value="Developer">Developer</option>
             <option value="Designer">Designer</option>
           </select>
+          {errors.f_Designation && (
+            <p className="text-red-500 text-sm">{errors.f_Designation}</p>
+          )}
         </div>
 
         <div>
@@ -171,6 +228,9 @@ const Employeecreate = () => {
               </label>
             ))}
           </div>
+          {errors.f_Gender && (
+            <p className="text-red-500 text-sm">{errors.f_Gender}</p>
+          )}
         </div>
 
         <div>
@@ -189,6 +249,9 @@ const Employeecreate = () => {
               </label>
             ))}
           </div>
+          {errors.f_Course && (
+            <p className="text-red-500 text-sm">{errors.f_Course}</p>
+          )}
         </div>
 
         <div>
@@ -199,6 +262,9 @@ const Employeecreate = () => {
             onChange={handleFileChange}
             className="w-full border rounded px-3 py-2"
           />
+          {errors.f_Image && (
+            <p className="text-red-500 text-sm">{errors.f_Image}</p>
+          )}
           {f_Image && !id && (
             <img
               src={URL.createObjectURL(f_Image)}
